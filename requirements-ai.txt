@@ -1,0 +1,7 @@
+-r requirements.txt
+# Optional local Stable Diffusion stack. Install this only when you want real local image generation.
+torch>=2.5
+diffusers>=0.35
+transformers>=4.49
+accelerate>=1.2
+safetensors>=0.5

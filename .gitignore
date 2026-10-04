@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.venv/
+env/
+comiccraft-env/
+.env
+.pytest_cache/
+static/panels/*.png
+static/panels/*.jpg
+static/exports/*.pdf
+!static/panels/.gitkeep
+!static/exports/.gitkeep

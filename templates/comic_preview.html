@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ character_name }} - Comic Preview</title>
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+  <main class="page-shell wide">
+    <header class="preview-header">
+      <div>
+        <div class="badge">COMIC PREVIEW</div>
+        <h1>{{ character_name }}'s Adventure</h1>
+        <p>Your 5-panel comic story has been generated! Review each illustrated panel below, then download the complete comic as a PDF.</p>
+      </div>
+      <a href="/" class="secondary-btn">Create Another</a>
+    </header>
+
+    <section class="comic-strip">
+      {% for panel in layout %}
+      <article class="comic-panel-box">
+        <div class="comic-panel-header">
+          <span class="comic-panel-badge">PANEL {{ panel.panel_number }}</span>
+          <h2 class="comic-panel-title">{{ panel.title }}</h2>
+        </div>
+
+        <div class="comic-image-container">
+          <img
+            src="{{ panel.image_url }}"
+            alt="Comic illustration for Panel {{ panel.panel_number }}: {{ panel.title }}"
+            class="comic-image"
+          >
+        </div>
+
+        <div class="comic-narrative">
+          {% if panel.caption %}
+          <div class="comic-caption-bar">
+            <span>{{ panel.caption }}</span>
+          </div>
+          {% endif %}
+
+          {% if panel.narration %}
+          <p class="comic-narration">{{ panel.narration }}</p>
+          {% endif %}
+
+          {% if panel.dialogue %}
+          <div class="comic-speech-bubble">
+            <p class="comic-dialogue-text">{{ panel.dialogue }}</p>
+          </div>
+          {% endif %}
+        </div>
+
+        <details class="comic-details">
+          <summary>Image prompt reference</summary>
+          <p>{{ panel.image_prompt }}</p>
+        </details>
+      </article>
+      {% endfor %}
+    </section>
+
+    <section class="download-card">
+      <h2>Your comic is ready</h2>
+      <p>The PDF contains all 5 panels, illustrations, narration, and dialogue.</p>
+      <button id="downloadBtn" class="primary-btn">Download Your Comic as PDF</button>
+    </section>
+  </main>
+
+  <script>
+    document.getElementById('downloadBtn').addEventListener('click', async () => {
+      const button = document.getElementById('downloadBtn');
+      button.disabled = true;
+      button.textContent = 'Preparing download...';
+      try {
+        const response = await fetch('/download/{{ pdf_filename }}');
+        if (!response.ok) throw new Error('Download failed');
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = '{{ pdf_filename }}';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+        window.location.href = '/export-success?pdf={{ pdf_filename }}';
+      } catch (error) {
+        alert(error.message);
+        button.disabled = false;
+        button.textContent = 'Download Your Comic as PDF';
+      }
+    });
+  </script>
+</body>
+</html>
